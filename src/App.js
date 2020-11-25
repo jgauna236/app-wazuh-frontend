@@ -1,83 +1,131 @@
 import React, { Component } from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
-import { AgentComponent } from './pages/agents';
-import { Home } from './pages/home';
 
+import 'bootstrap/dist/css/bootstrap.css';
+import './App.css';
+import Home from './pages/home';
+import AgentComponent from './pages/agents';
+import AlertComponent from './pages/alerts';
+import RuleComponent from './pages/rules';
 
-const Main = () => (
-  <main>
-    <Switch>
-      <Route exact path='/' component={Home} />
-      <Route exact path='/agent' component={AgentComponent}/>
-    </Switch>
-  </main>
-)
-
-
-class NavLink extends Component {
-
-  render() {
-      return (
-        <li className={"nav-item " + (this.props.isActive ? "active": "")}>
-                  <Link 
-                    className="nav-link" 
-                    to={this.props.path}
-                    onClick={() => this.props.onClick()}
-                  >
-              {this.props.text}</Link>
-        </li>
-      );
-  }
-}
-
-
-class Header extends Component {
-
+class Content extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      links: [
-        {path: "/agent", text: "Agents", isActive: false}
-      ]
-    }
+    const PAGES = [
+      {
+        name: 'Home',
+        text: 'Home',
+        component: <Home />
+      },
+      {
+        name: 'agents',
+        text: 'Agentes',
+        component: <AgentComponent />
+      },
+      {
+        name: 'alerts',
+        text: 'Alertas',
+        component: <AlertComponent />
+      },
+      {
+        name: 'rules',
+        text: 'Reglas',
+        component: <RuleComponent />
+      }
+    ];
+    this.state = {currentPage: PAGES[0], pages: PAGES};
+    this.setPage = this.setPage.bind(this);
   }
 
-  handleClick(i) {
-    const links = this.state.links.slice(); 
-    for (const j in links) {
-      links[j].isActive = i == j ;
+  setPage(name) {
+    const pages = this.state.pages.slice();
+    for (let i = 0; i < pages.length; i++) {
+      if(pages[i].name === name) {
+        this.setState({currentPage: pages[i]});
+      }
     }
-    this.setState({links: links});
   }
-
 
   render() {
     return (
-      <div>
-        <nav className="navbar navbar-expand-lg navbar-light  bg-light">
-          <Link className="navbar-brand" to="/">Home</Link>
-          <ul className="navbar-nav">
-            {this.state.links.map((link, i) => 
-              <NavLink 
-                path={link.path} 
-                text={link.text} 
-                isActive={link.isActive}
-                key={link.path} 
-                onClick={() => this.handleClick(i)}
-              /> 
-              )}
-          </ul>
-        </nav>
+      <div className="row">
+        <div className="col-md-3 sidebar">
+          <Navigation setPage={this.setPage} currentPage={this.state.currentPage} pages={this.state.pages}/>
+        </div>
+        <div className="col content">
+          {
+            this.state.currentPage.component
+          }
+        </div>
       </div>
     );
   }
 }
 
-const App = () => (
-  <div>
-    <Header />
-    <Main />
-  </div>
-)
+class Navigation extends Component {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick(event) {
+    event.preventDefault();
+    this.props.setPage(event.target.name);
+  }
+
+  render() {
+    const pages = this.props.pages;
+    let retHtml = [];
+    pages.forEach( page => {
+      if (page.name === this.props.currentPage.name) {
+        retHtml.push (
+          <li className="nav-item" key={page.name}>
+            <a name={page.name} className="nav-link active" href="" onClick={this.onClick}>{page.text}</a>
+          </li>
+        );
+      } else {
+        retHtml.push (
+          <li className="nav-item" key={page.name}>
+            <a name={page.name} className="nav-link" href="" onClick={this.onClick}>{page.text}</a>
+          </li>
+        );
+      }
+    }
+    );
+    return <ul className="nav nav-pills flex-column sidebar">{retHtml}</ul>;
+  }
+}
+
+class Header extends Component {
+  render() {
+    return (
+      <div className="header row">
+        <hr/>
+      </div>
+    );
+  }
+}
+
+class Footer extends Component {
+  render() {
+    return (
+      <div className="row">
+        <footer className="footer">
+        </footer>
+      </div>
+    );
+  }
+}
+
+class App extends Component {
+  render() {
+    return (
+      <div className="App container">
+        <Header />
+        <Content />
+        <Footer />
+      </div>
+    );
+  }
+}
 
 export default App;

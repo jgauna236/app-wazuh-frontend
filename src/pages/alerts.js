@@ -1,14 +1,14 @@
 import React from 'react';
-import AgentService from '../service/agentService';
+import AlertService from '../service/alertService';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
 
-class AgentComponent extends React.Component{
+class AlertComponent extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            listAgent: [],
+            listAlert: [],
         }
         this.fetchData = this.fetchData.bind(this);
         this.render = this.render.bind(this);
@@ -16,18 +16,18 @@ class AgentComponent extends React.Component{
     }
 
     fetchData(){
-        AgentService.getAll().then(
-            (json) => this.setState({listAgent: json})
+        AlertService.getAll().then(
+            (json) => this.setState({listAlert: json})
         );
         
     }
 
-    renderCard(agent){
+    renderCard(alert){
         return (
             <Card>
                 <Card.Body>
-                    <Card.Title>{agent.name}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">{agent.ip}</Card.Subtitle>
+                    <Card.Title>{alert.agent.name + " ("+ alert.agent.ip + ")"}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">{alert.rule.description}</Card.Subtitle>
                     <Card.Link href="#">Descripción</Card.Link>
                 </Card.Body>
             </Card>
@@ -37,7 +37,7 @@ class AgentComponent extends React.Component{
     render(){ 
         return (
         <div>
-            {this.state.listAgent.map(agent => this.renderCard(agent))}
+            {this.state.listAlert.map(alert => this.renderCard(alert._source))}
         </div>
         );
     }
@@ -45,4 +45,4 @@ class AgentComponent extends React.Component{
 }
 
 
-export default AgentComponent;
+export default AlertComponent;

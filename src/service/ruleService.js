@@ -1,10 +1,10 @@
 
-class AgentService {
+class RuleService {
 
 
 
     getAll() {
-        return fetch('http://localhost:8000/agents/all')
+        return fetch('http://localhost:8000/rules/all')
         .then(response => {return response.json();})
         .catch(function(error) {
             console.log(error);
@@ -13,4 +13,4 @@ class AgentService {
 
 }
 
-export default new AgentService();
+export default new RuleService();
